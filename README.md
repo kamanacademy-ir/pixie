@@ -8,6 +8,7 @@ It has some advanced features like:
  - Sub Queries
  - Nested Queries
  - Multiple Database Connections.
+ -- Added query listener
 
 The syntax is quite similar to Laravel's query builder.
 
