@@ -168,6 +168,8 @@ class QueryBuilderHandler
         $executionTime = 0;
         if (is_null($this->pdoStatement)) {
             $queryObject = $this->getQuery('select');
+            $this->fireEvents('before-query', $queryObject);
+
             list($this->pdoStatement, $executionTime) = $this->statement(
                 $queryObject->getSql(),
                 $queryObject->getBindings()
@@ -321,7 +323,7 @@ class QueryBuilderHandler
         // Its not a batch insert
         if (!is_array(current($data))) {
             $queryObject = $this->getQuery($type, $data);
-
+            $this->fireEvents('before-query', $queryObject);
             list($result, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
 
             $return = $result->rowCount() === 1 ? $this->pdo->lastInsertId() : null;
@@ -331,6 +333,7 @@ class QueryBuilderHandler
             $executionTime = 0;
             foreach ($data as $subData) {
                 $queryObject = $this->getQuery($type, $subData);
+                $this->fireEvents('before-query', $queryObject);
 
                 list($result, $time) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
                 $executionTime += $time;
@@ -389,6 +392,7 @@ class QueryBuilderHandler
         }
 
         $queryObject = $this->getQuery('update', $data);
+        $this->fireEvents('before-query', $queryObject);
 
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-update', $queryObject, $executionTime);
@@ -432,6 +436,7 @@ class QueryBuilderHandler
         }
 
         $queryObject = $this->getQuery('delete');
+        $this->fireEvents('before-query', $queryObject);
 
         list($response, $executionTime) = $this->statement($queryObject->getSql(), $queryObject->getBindings());
         $this->fireEvents('after-delete', $queryObject, $executionTime);
